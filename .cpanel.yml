@@ -1,0 +1,7 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/makka/public_html/
+    - /bin/cp -Rf * $DEPLOYPATH
+    - /bin/cp -f .htaccess $DEPLOYPATH
+    - /bin/cp -f .user.ini $DEPLOYPATH
