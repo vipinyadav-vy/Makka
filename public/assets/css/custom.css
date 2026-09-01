@@ -1,0 +1,54 @@
+/*Custom css*/
+.small-box{padding:10px;}
+.form-check-inline{margin-right: -0.25rem;}
+.switch {
+	margin-top: 5px;
+    /*width: 60px;
+    height: 28px;*/
+}
+/*.slider:before {
+    height: 22px;
+    width: 22px;
+    left: 7px;
+    bottom: 3px;
+}*/
+.table td, .table th {
+    vertical-align: middle;
+}
+.form-control{margin-bottom:10px;}
+.main-sidebar {
+    background-color: #282828 !important;
+}
+.layout-fixed .brand-link {
+    background: #31b44c;
+}
+.table .thead-dark th {
+    color: #fff;
+    background-color:#31b44c ;
+    border-color: greenyellow;
+}
+.diaries-task-card .task_status{margin-top:48px;}
+.diaries-task-card .task_status input[type=radio]{
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.uploaded-images{margin-bottom:20px;}
+.uploaded-images .uploaded-img{border: 10px solid #f1f1f1; padding: 20px; border-radius: 0.25rem;}
+.removeimg {
+    position: absolute;
+    background-color: #ccc;
+    border-radius: 0;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    cursor: pointer;
+    margin-left: 0;
+    margin-top: 0;
+}  
+.btn-add, .btn-remove{margin-top: 32px;}
+.resultData table td span.view-resend-action {
+    float: right;
+    text-align: right;
+    margin-right: 20px;
+}
+.update-mt-80{margin-top:80px;}
