@@ -22,9 +22,11 @@ class AuthController extends Controller
             return response()->json(['error' => $validator->errors()], 401);
         }
 
-        $input = $request->all();
-        $input['password'] = bcrypt($input['password']);
-        $user = User::create($input);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
         $accessToken = $user->createToken('authToken')->accessToken;
 
         return response()->json(['user' => $user, 'access_token' => $accessToken]);

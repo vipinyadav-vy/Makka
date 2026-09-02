@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # Block access to secrets and application source
+    RewriteRule ^(\.env|\.git) - [F,L]
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|vendor)(/|$) - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

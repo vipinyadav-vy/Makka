@@ -99,29 +99,15 @@ class PreStartMeetingsSuperAdmin extends Controller
             $premeeting['conducted_by'] = $request->conducted_by;
             if($request->conducted_by_signature){
             $img = $request->conducted_by_signature;
-            $folderPath = public_path('/images/signatures'); // path location
-            $image_parts = explode(";base64,", $img);
-            $image_type_aux = explode("image/", $image_parts[0]);
-            $image_type = $image_type_aux[1];
-            $image_base64 = base64_decode($image_parts[1]);
-            $uniqid = uniqid();
-            $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-            $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-            file_put_contents($file, $image_base64);
+            $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
             $premeeting['conducted_by_signature'] = $imageName;
             }
             $premeeting['representative'] = $request->representative;
             if($request->representative_signature){
             $img = $request->representative_signature;
-            $folderPath = public_path('/images/signatures'); // path location
-            $image_parts = explode(";base64,", $img);
-            $image_type_aux = explode("image/", $image_parts[0]);
-            $image_type = $image_type_aux[1];
-            $image_base64 = base64_decode($image_parts[1]);
-            $uniqid = uniqid();
-            $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-            $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-            file_put_contents($file, $image_base64);
+            $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
             $premeeting['representative_signature'] = $imageName;
             }
             $premeeting['discussion']  = $request->discussion;

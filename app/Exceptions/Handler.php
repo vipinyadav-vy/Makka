@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -25,6 +28,21 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (Throwable $e, $request) {
+            if (!$request->is('api/*') || config('app.debug')) {
+                return null;
+            }
+            if ($e instanceof ValidationException || $e instanceof AuthenticationException || $e instanceof HttpException) {
+                return null;
+            }
+
+            return response()->json([
+                'ResponseCode' => 500,
+                'Status' => false,
+                'Message' => 'Something Went wrong. Please Try again.',
+            ], 200);
         });
     }
 }

@@ -24,44 +24,45 @@ use App\Http\Controllers\SuperAdmin\ToolboxTalkControllerSuperAdmin;
 
 Route::get('/', [App\Http\Controllers\Front\FrontHomeController::class, 'index'])->name('home-front');
 Route::get('webforms/{slug?}', [App\Http\Controllers\Front\FrontHomeController::class, 'webforms'])->name('webforms_front');
-Route::post('siteInductionRecordSave', [App\Http\Controllers\Front\FrontHomeController::class, 'siteInductionRecordSave'])->name('siteInductionRecordSave');
-Route::post('siteSafetyInspectionSave', [App\Http\Controllers\Front\FrontHomeController::class, 'siteSafetyInspectionSave'])->name('siteSafetyInspectionSave');
+Route::post('siteInductionRecordSave', [App\Http\Controllers\Front\FrontHomeController::class, 'siteInductionRecordSave'])->name('siteInductionRecordSave')->middleware('throttle:public-forms');
+Route::post('siteSafetyInspectionSave', [App\Http\Controllers\Front\FrontHomeController::class, 'siteSafetyInspectionSave'])->name('siteSafetyInspectionSave')->middleware('throttle:public-forms');
 Route::get('siteSafetyInspectionget/{id?}', [App\Http\Controllers\Front\FrontHomeController::class, 'siteSafetyInspectionget'])->name('siteSafetyInspectionget');
 Route::get('toolBoxTalkAttendance/{id?}', [App\Http\Controllers\Front\FrontHomeController::class, 'toolBoxTalkAttendance'])->name('toolBoxTalkAttendance');
-Route::post('toolBoxTalkAttendanceStore', [App\Http\Controllers\Front\FrontHomeController::class, 'toolBoxTalkAttendanceStore'])->name('toolBoxTalkAttendanceStore');
+Route::post('toolBoxTalkAttendanceStore', [App\Http\Controllers\Front\FrontHomeController::class, 'toolBoxTalkAttendanceStore'])->name('toolBoxTalkAttendanceStore')->middleware('throttle:public-forms');
 
 Route::get('preStartMeetings/{id?}', [App\Http\Controllers\Front\FrontHomeController::class, 'preStartMeeting'])->name('preStartMeeting');
-Route::post('preStartMeetingStore', [App\Http\Controllers\Front\FrontHomeController::class, 'preStartMeetingStore'])->name('preStartMeetingStore');
+Route::post('preStartMeetingStore', [App\Http\Controllers\Front\FrontHomeController::class, 'preStartMeetingStore'])->name('preStartMeetingStore')->middleware('throttle:public-forms');
 
 Route::get('inspectionTestPlan/{id?}', [App\Http\Controllers\Front\FrontHomeController::class, 'inspectionTestPlan'])->name('inspectionTestPlan');
-Route::post('inspectionTestPlanStore', [App\Http\Controllers\Front\FrontHomeController::class, 'inspectionTestPlanStore'])->name('inspectionTestPlanStore');
+Route::post('inspectionTestPlanStore', [App\Http\Controllers\Front\FrontHomeController::class, 'inspectionTestPlanStore'])->name('inspectionTestPlanStore')->middleware('throttle:public-forms');
 
 Route::get('supplierContractorEvaluation', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorEvaluation'])->name('supplierContractorEvaluation');
-Route::post('supplierContractorEvalutionSave', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorEvalutionSave'])->name('supplierContractorEvalutionSave');
+Route::post('supplierContractorEvalutionSave', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorEvalutionSave'])->name('supplierContractorEvalutionSave')->middleware('throttle:public-forms');
 
 Route::get('supplierContractorCar/{id?}', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorCar'])->name('supplierContractorCar');
-Route::post('supplierContractorCarStore', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorCarStore'])->name('supplierContractorCarStore');
+Route::post('supplierContractorCarStore', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorCarStore'])->name('supplierContractorCarStore')->middleware('throttle:public-forms');
 
 Route::get('preStartChecklist', [App\Http\Controllers\Front\FrontHomeController::class, 'preStartChecklist'])->name('preStartChecklist');
-Route::post('preStartChecklistSave', [App\Http\Controllers\Front\FrontHomeController::class, 'preStartChecklistSave'])->name('preStartChecklistSave');
+Route::post('preStartChecklistSave', [App\Http\Controllers\Front\FrontHomeController::class, 'preStartChecklistSave'])->name('preStartChecklistSave')->middleware('throttle:public-forms');
 
 
 Route::get('forgot-password', [UserController::class, 'forgotPassword'])->name('forgot-password');
 Route::get('forgot-password/{token}', [UserController::class, 'forgotPasswordValidate']);
-Route::post('forgot-password', [UserController::class, 'resetPassword'])->name('forgot-password');
-Route::put('reset-password', [UserController::class, 'updatePassword'])->name('reset-password');
-Route::get('/siteInductionReportsPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'siteInductionReportsPdf'])->name('siteInductionReportsPdf');
-Route::get('/siteSafeInspectionReportsPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'siteSafeInspectionReportsPdf'])->name('siteSafeInspectionReportsPdf');
-Route::get('/preStartMeetingsPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'preStartMeetingsPdf'])->name('preStartMeetingsPdf');
-Route::get('/inspectionTestPlanPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'inspectionTestPlanPdf'])->name('inspectionTestPlanPdf');
-Route::get('/supplierContractorCarPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorCarPdf'])->name('supplierContractorCarPdf');
-Route::get('/supplierContractorEvaluationPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorEvaluationPdf'])->name('supplierContractorEvaluationPdf');
-Route::get('/contractPreStartChecklistPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'contractPreStartChecklistPdf'])->name('contractPreStartChecklistPdf');
-Route::get('/supplierContractorEvaluationPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorEvaluationPdf'])->name('supplierContractorEvaluationPdf');
+Route::post('forgot-password', [UserController::class, 'resetPassword'])->name('forgot-password')->middleware('throttle:5,1');
+Route::put('reset-password', [UserController::class, 'updatePassword'])->name('reset-password')->middleware('throttle:5,1');
+Route::middleware('auth')->group(function () {
+    Route::get('/siteInductionReportsPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'siteInductionReportsPdf'])->name('siteInductionReportsPdf');
+    Route::get('/siteSafeInspectionReportsPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'siteSafeInspectionReportsPdf'])->name('siteSafeInspectionReportsPdf');
+    Route::get('/preStartMeetingsPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'preStartMeetingsPdf'])->name('preStartMeetingsPdf');
+    Route::get('/inspectionTestPlanPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'inspectionTestPlanPdf'])->name('inspectionTestPlanPdf');
+    Route::get('/supplierContractorCarPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorCarPdf'])->name('supplierContractorCarPdf');
+    Route::get('/supplierContractorEvaluationPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'supplierContractorEvaluationPdf'])->name('supplierContractorEvaluationPdf');
+    Route::get('/contractPreStartChecklistPdf/{id}', [App\Http\Controllers\Front\FrontHomeController::class, 'contractPreStartChecklistPdf'])->name('contractPreStartChecklistPdf');
+});
 
 
 
-Auth::routes();
+Auth::routes(['register' => false]);
 
 Route::group(['middleware' => ["is_superadmin"], "prefix" => "superadmin"], function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
@@ -153,7 +154,3 @@ Route::group(['middleware' => ["is_admin"], "prefix" => "admin"], function () {
     Route::delete('/user_diaryImageDelete/{id}', [App\Http\Controllers\Admin\AdminDiariesController::class, 'destroyImage'])->name('user_diaryImageDelete');
 
 });
-
-
-
-Auth::routes();

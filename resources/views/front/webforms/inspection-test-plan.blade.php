@@ -180,7 +180,7 @@
             <th colspan="3" class="main-th">Area Completion</th>
           </tr>
           <tr>
-              <?php $type = $_GET['type']; 
+              <?php $type = request('type') === 'SC' ? 'SC' : 'PC'; 
               if ($type && $type == 'SC') { ?>
             <th>Subcontractor Representative</th>
             <?php }else{ ?>

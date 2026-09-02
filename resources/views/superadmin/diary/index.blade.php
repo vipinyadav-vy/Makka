@@ -65,7 +65,7 @@ $result = json_decode($result,true);
                     </select>
                 </div> 
                 <div class="col-md-2">
-                    <input type="date" class="form-control" name="program_date" id="program_date" value="@if(!empty($_GET['program_date'])){{ $_GET['program_date'] }}@endif" autocomplete="off" required>
+                    <input type="date" class="form-control" name="program_date" id="program_date" value="@if(!empty($_GET['program_date'])){{ request('program_date') }}@endif" autocomplete="off" required>
                 </div>
                 <div class="col-md-2">
                     <button id="filters" class="btn btn-success filter topmra" style="margin-left: -11px;">Search</button>
@@ -84,8 +84,8 @@ $result = json_decode($result,true);
                     <form class="asdasd" method="post" action="{{route('diaries.store')}}" enctype="multipart/form-data" autocomplete="off">
                 @endif 
                 @csrf
-                    <input type="hidden"  name="project_id" value="{{ $_GET['project'] }}" required>
-                    <input type="hidden"  name="program_diary_date" value="{{ $_GET['program_date'] }}" required>
+                    <input type="hidden"  name="project_id" value="{{ request('project') }}" required>
+                    <input type="hidden"  name="program_diary_date" value="{{ request('program_date') }}" required>
                     @isset($programData)
                     <input type="hidden"  name="program_id" value="{{ $programData->id }}" required>
                     @endif

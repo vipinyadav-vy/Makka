@@ -8,12 +8,12 @@
     <div class="rowd m-3">
         <form class="form-inline" method="GET">
             <div class="col-md-2">
-            <input type="hidden" name="pId" value="<?php if(!empty($_GET['pId'])){ echo $_GET['pId']; } ?>" >
+            <input type="hidden" name="pId" value="{{ request('pId') }}" >
 
-                <input type="date" class="form-control" name="from_date" id="from_date" autocomplete="off" value="<?php if(!empty($_GET['from_date'])){ echo $_GET['from_date']; } ?>" >
+                <input type="date" class="form-control" name="from_date" id="from_date" autocomplete="off" value="{{ request('from_date') }}" >
             </div>
             <div class="col-md-2">
-                <input type="date" class="form-control" name="to_date" id="to_date" autocomplete="off" value="<?php if(!empty($_GET['to_date'])){ echo $_GET['to_date']; } ?>">
+                <input type="date" class="form-control" name="to_date" id="to_date" autocomplete="off" value="{{ request('to_date') }}">
             </div>
             <div class="col-md-2">
                 <button id="filters" class="btn btn-success filter topmra" style="margin-left: -11px;">Filter</button>

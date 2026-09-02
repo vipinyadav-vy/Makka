@@ -19,7 +19,7 @@ class Userapi extends JsonResource
             'usertype' => $this->usertype,
             'name' => $this->name,
             'email' => $this->email,
-            'password' => $this->password,
+            'password' => null,
             'contact_no' => $this->contact_no,
             'address' => $this->address,
             'shopingcenter_id ' => $this->shopingcenter_id ,

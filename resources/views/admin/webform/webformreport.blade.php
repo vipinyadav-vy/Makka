@@ -25,7 +25,7 @@
                     <?php 
                     if($userWebforms){
                         foreach ($userWebforms as $key => $userWebformsVal) { ?>
-                           <option value="{{ route('webform') }}/{{  $userWebformsVal->slug }}?pId=<?php echo $_GET['pId']; ?>"><?php echo $userWebformsVal->title; ?></option>
+                           <option value="{{ route('webform') }}/{{  $userWebformsVal->slug }}?pId={{ request('pId') }}"><?php echo $userWebformsVal->title; ?></option>
                     <?php    }
                     }
                     ?>

@@ -33,8 +33,12 @@ class UserController extends BaseController {
     public function addUser(Request $request){
         
         $validator = Validator:: make($request -> all(), [
-                'user_name' => 'required',
-                'email' => 'required|unique:users,email|regex:/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix',
+                'user_name' => 'required|string|max:255',
+                'email' => 'required|unique:users,email|regex:/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix|max:255',
+                'projects' => 'nullable|array',
+                'projects.*.project' => 'nullable|integer',
+                'projects.*.webform_ids' => 'nullable|array',
+                'projects.*.webform_ids.*' => 'integer',
             ]
         );
         if ($validator->fails()) {
@@ -95,8 +99,8 @@ class UserController extends BaseController {
     
         public function changeUserStatus(Request $request){
         $validator = Validator:: make($request -> all(), [
-                'id' => 'required',
-                'status'=> 'required',
+                'id' => 'required|integer',
+                'status'=> 'required|in:0,1',
             ]
         );
         if ($validator->fails()) {
@@ -122,8 +126,12 @@ class UserController extends BaseController {
      public function updateUser(Request $request)
     {
         $validator = Validator:: make($request -> all(), [
-                'id' => 'required',
-                'user_name'=> 'required',
+                'id' => 'required|integer',
+                'user_name'=> 'required|string|max:255',
+                'projects' => 'nullable|array',
+                'projects.*.project' => 'nullable|integer',
+                'projects.*.webform_ids' => 'nullable|array',
+                'projects.*.webform_ids.*' => 'integer',
             ]
         );
         if ($validator->fails()) {

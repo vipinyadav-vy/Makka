@@ -120,11 +120,7 @@ class ProgramsControllerSuperAdmin extends Controller
      * @return \Illuminate\Http\Response
      */
      
-     public function update(Request $request,$id){
-         
-         print_r($request->all());
-         
-         exit;
+         public function update(Request $request,$id){
        
         $programRecord = Programs::where(['id' => $id])->first();
         if (empty($programRecord)) {

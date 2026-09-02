@@ -22,10 +22,11 @@ class ProgramController extends BaseController {
         
         public function addProgram(Request $request) {
             $validator = Validator:: make($request -> all(), [
-                'project' => 'required',
-                'program_date' => 'required',
-                'note' => 'required',
-                'task' => 'required',
+                'project' => 'required|integer',
+                'program_date' => 'required|date',
+                'note' => 'required|string|max:5000',
+                'task' => 'required|array',
+                'task.*' => 'nullable|string|max:2000',
             ]);
             if ($validator->fails()) {
               return $this->sendFailed($validator -> errors() -> first());
@@ -54,8 +55,8 @@ class ProgramController extends BaseController {
 
         public function programDetails(Request $request) {
             $validator = Validator:: make($request -> all(), [
-                'project' => 'required',
-                'program_date' => 'required',
+                'project' => 'required|integer',
+                'program_date' => 'required|date',
             ]);
             if ($validator->fails()) {
               return $this->sendFailed($validator -> errors() -> first());
@@ -110,9 +111,12 @@ class ProgramController extends BaseController {
             // print_r($request->all());
             // exit;
             $validator = Validator:: make($request -> all(), [
-            'id' => 'required',
-            'note' => 'required',
-            'task' => 'required',
+            'id' => 'required|integer',
+            'note' => 'required|string|max:5000',
+            'task' => 'nullable|array',
+            'existTaskId' => 'nullable|array',
+            'existTaskId.*' => 'integer',
+            'existTask' => 'nullable|array',
         ]);
         if ($validator->fails()) {
           return $this->sendFailed($validator -> errors() -> first());
@@ -200,22 +204,13 @@ class ProgramController extends BaseController {
             }
             
             if($request->images){
-            $img = $request->images;
-            $folderPath = public_path('/images/diaryImage'); // path location
-            $image_parts = explode(";base64,", $img);
-            $image_type_aux = explode("image/", $image_parts[0]);
-            $image_type = $image_type_aux[1];
-            $image_base64 = base64_decode($image_parts[1]);
-            $uniqid = uniqid();
-            $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-            $imageName = '/public/images/diaryImage/'. $uniqid .'.'.$image_type;
-            file_put_contents($file, $image_base64);
-            
+            $stored = store_base64_upload($request->images, public_path('/images/diaryImage'), '/public/images/diaryImage');
+            if ($stored) {
              $diaryImageData = new DiaryImage();
                             $diaryImageData['diary_id'] = $diaryData->id;
-                            $diaryImageData['images'] = $imageName;
+                            $diaryImageData['images'] = $stored['public'];
                             $diaryImageData->save();
-            
+            }
             }
             return $this->sendSuccess('Created Successfully');
 
@@ -294,7 +289,9 @@ class ProgramController extends BaseController {
         public function diaryUpdate(Request $request) {
             
             $validator = Validator:: make($request -> all(), [
-            'id' => 'required'
+            'id' => 'required|integer',
+            'comments' => 'nullable|string|max:5000',
+            'images' => 'nullable|string',
         ]);
         if ($validator->fails()) {
           return $this->sendFailed($validator -> errors() -> first());
@@ -349,22 +346,13 @@ class ProgramController extends BaseController {
                         }
                         
                     if($request->images){
-                        $img = $request->images;
-                        $folderPath = public_path('/images/diaryImage'); // path location
-                        $image_parts = explode(";base64,", $img);
-                        $image_type_aux = explode("image/", $image_parts[0]);
-                        $image_type = $image_type_aux[1];
-                        $image_base64 = base64_decode($image_parts[1]);
-                        $uniqid = uniqid();
-                        $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-                        $imageName = '/public/images/diaryImage/'. $uniqid .'.'.$image_type;
-                        file_put_contents($file, $image_base64);
-                        
+                        $stored = store_base64_upload($request->images, public_path('/images/diaryImage'), '/public/images/diaryImage');
+                        if ($stored) {
                          $diaryImageData = new DiaryImage();
                                         $diaryImageData['diary_id'] = $diaryRecord->id;
-                                        $diaryImageData['images'] = $imageName;
+                                        $diaryImageData['images'] = $stored['public'];
                                         $diaryImageData->save();
-                        
+                        }
                         }
                     return $this->sendSuccess('Updated Successfully');
                     }else{

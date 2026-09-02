@@ -33,7 +33,7 @@
             </select>
         </div>
     <div class="col-md-2">
-    <input type="date" class="form-control" name="program_date" id="program_date" value="@if(!empty($_GET['program_date'])){{ $_GET['program_date'] }}@endif" autocomplete="off" required>
+    <input type="date" class="form-control" name="program_date" id="program_date" value="@if(!empty($_GET['program_date'])){{ request('program_date') }}@endif" autocomplete="off" required>
     </div>
     <div class="col-md-2">
         <button id="filters" class="btn btn-success filter topmra" style="margin-left: -11px;">Search</button>
@@ -52,8 +52,8 @@
         <form method="post" action="{{ route('programUpdate', [$programData->id]) }}" enctype="multipart/form-data" autocomplete="off">
         @else
             <form name="programs" method="post" action="{{route('programs.store')}}" enctype="multipart/form-data" autocomplete="off">
-            <input type="hidden"  name="project" value="@if(!empty($_GET['project'])){{ $_GET['project'] }}@endif" required>
-            <input type="hidden"  name="program_date" value="@if(!empty($_GET['program_date'])){{ $_GET['program_date'] }}@endif" required>
+            <input type="hidden"  name="project" value="@if(!empty($_GET['project'])){{ request('project') }}@endif" required>
+            <input type="hidden"  name="program_date" value="@if(!empty($_GET['program_date'])){{ request('program_date') }}@endif" required>
             @endif
         @csrf
         @if(!empty($_GET['project']))

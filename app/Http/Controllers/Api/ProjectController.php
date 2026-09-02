@@ -30,7 +30,9 @@ class ProjectController extends BaseController {
     public function createProject(Request $request){
         
         $validator = Validator:: make($request -> all(), [
-                'name' => 'required|unique:projects,name',
+                'name' => 'required|string|max:255|unique:projects,name',
+                'webforms' => 'nullable|array',
+                'webforms.*' => 'integer',
             ]
         );
         if ($validator->fails()) {
@@ -61,7 +63,7 @@ class ProjectController extends BaseController {
     {
         
         $validator = Validator:: make($request -> all(), [
-                'id' => 'required',
+                'id' => 'required|integer',
             ]
         );
         if ($validator->fails()) {
@@ -94,7 +96,10 @@ class ProjectController extends BaseController {
     
     public function updateProject(Request $request){
         $validator = Validator:: make($request -> all(), [
-                'id' => 'required',
+                'id' => 'required|integer',
+                'name' => 'nullable|string|max:255',
+                'webforms' => 'nullable|array',
+                'webforms.*' => 'integer',
             ]
         );
         if ($validator->fails()) {
@@ -131,8 +136,8 @@ class ProjectController extends BaseController {
     
     public function changeProjectStatus(Request $request){
         $validator = Validator:: make($request -> all(), [
-                'id' => 'required',
-                'status'=> 'required',
+                'id' => 'required|integer',
+                'status'=> 'required|in:0,1',
             ]
         );
         if ($validator->fails()) {

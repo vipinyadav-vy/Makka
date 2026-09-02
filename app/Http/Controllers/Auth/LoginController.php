@@ -40,6 +40,12 @@ class LoginController extends Controller
     {
         
         $this->validateLogin($request);
+
+        if ($this->hasTooManyLoginAttempts($request)) {
+            $this->fireLockoutEvent($request);
+            return $this->sendLockoutResponse($request);
+        }
+
         $email = request()->input("email");
         // check exists in database or not.
         // if(!User::where("email",$email)->count() && !CreateUser::where([["email",$email],["is_deleted",0]])->count()){
@@ -69,6 +75,8 @@ class LoginController extends Controller
             
         //     return $this->sendLoginResponse($request,"createuser");
         // }
+
+        $this->incrementLoginAttempts($request);
 
         return $this->sendFailedLoginResponse($request,"password","Password didn't matched.");
     }

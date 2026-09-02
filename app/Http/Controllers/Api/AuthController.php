@@ -23,8 +23,8 @@ class AuthController extends BaseController {
   public function userLogin(Request $request) {
         // Validate Request Data
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|max:255',
         ]);
         if ($validator->fails()) {
             return $this->sendFailed($validator->errors()->first());
@@ -48,7 +48,7 @@ class AuthController extends BaseController {
     public function userWebFormAccess(Request $request){
         // Validate Request Data
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required',
+            'user_id' => 'required|integer',
         ]);
         if ($validator->fails()) {
             return $this->sendFailed($validator->errors()->first());
@@ -66,8 +66,8 @@ public function userWebFormAccessStatusUpdate(Request $request)
     {
         // Validate Request Data
         $validator = Validator::make($request->all(), [
-            'id' => 'required',
-            'form_view' => 'required',
+            'id' => 'required|integer',
+            'form_view' => 'required|in:0,1',
         ]);
         if ($validator->fails()) {
             return $this->sendFailed($validator->errors()->first());
@@ -75,6 +75,9 @@ public function userWebFormAccessStatusUpdate(Request $request)
         $id = $request->id;
         $form_view = $request->form_view;
         $data = UserWebform::find($id);
+        if (empty($data)) {
+            return $this->sendFailed('Record Does not Exist');
+        }
         $data->form_view = $form_view;
         $data->save();
 

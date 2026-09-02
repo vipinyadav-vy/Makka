@@ -36,7 +36,8 @@
 
                         <div class="card-body px-4">
 
-                            <input type="hidden" name="email" value="{{ $email }} "/>
+                            <input type="hidden" name="email" value="{{ $email }}"/>
+                            <input type="hidden" name="token" value="{{ $token }}"/>
 
                             <div class="form-group py-2">
                                 <label> Password </label>

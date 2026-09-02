@@ -221,51 +221,15 @@ class FrontHomeController extends Controller
         
         try {
             if ($request->input('identityDocument')) {
-                
-                
-                // Your existing code to get the image data
-$image_64 = $request->input('identityDocument'); //your base64 encoded data
-$extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
-$replace = substr($image_64, 0, strpos($image_64, ',')+1); 
-$image = str_replace($replace, '', $image_64); 
-$image = str_replace(' ', '+', $image); 
-
-// Decode base64 image data
-$image = base64_decode($image);
-
-// Create image resource from decoded data
-$img = imagecreatefromstring($image);
-
-// Set compression quality (adjust this as needed)
-$compression_quality = 50; // 0 (worst quality) to 100 (best quality)
-
-// Save the compressed image to a temporary file
-$temp_file = tempnam(sys_get_temp_dir(), 'compressed_image');
-imagejpeg($img, $temp_file, $compression_quality);
-
-// Get the content of the compressed image
-$compressed_image_content = file_get_contents($temp_file);
-
-// Generate unique file name and path
-$imagePath = "images/identities/" . uniqid() . '_' . time() . '.' . $extension;
-
-// Save the compressed image
-file_put_contents(public_path($imagePath), $compressed_image_content);
-
-// Clean up: Delete temporary file
-unlink($temp_file);
-
-                
-                
-                // $image_64 = $request->input('identityDocument'); //your base64 encoded data
-                // $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
-                // $replace = substr($image_64, 0, strpos($image_64, ',')+1); 
-                // $image = str_replace($replace, '', $image_64); 
-                // $image = str_replace(' ', '+', $image); 
-                // $imagePath = "images/identities/" . uniqid() . '_' . time() . '.' . $extension;
-                // $publicPath = public_path(); 
-                // file_put_contents($publicPath . '/' . $imagePath, base64_decode($image));
-                $siteInductionRecord->identityDocument = '/public/'.$imagePath;
+                $stored = store_base64_upload(
+                    $request->input('identityDocument'),
+                    public_path('images/identities'),
+                    '/public/images/identities',
+                    ['jpg', 'jpeg', 'png', 'pdf']
+                );
+                if ($stored) {
+                    $siteInductionRecord->identityDocument = $stored['public'];
+                }
             }
         } catch (\Exception $e) {
             // Log the error or handle it appropriately
@@ -375,15 +339,8 @@ unlink($temp_file);
         $siteInductionRecord->inducteeName = $request->inducteeName;
         if($request->inducteeSignature){
         $img = $request->inducteeSignature;
-        $folderPath = public_path('/images/signatures'); // path location
-        $image_parts = explode(";base64,", $img);
-        $image_type_aux = explode("image/", $image_parts[0]);
-        $image_type = $image_type_aux[1];
-        $image_base64 = base64_decode($image_parts[1]);
-        $uniqid = uniqid();
-        $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-        $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-        file_put_contents($file, $image_base64);
+        $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
         $siteInductionRecord->inducteeSignature = $imageName;
         }
         $siteInductionRecord->applyDate = $request->applyDate;
@@ -1351,15 +1308,8 @@ unlink($temp_file);
 
             if($request->worker_signature){
                 $img = $request->worker_signature;
-                $folderPath = public_path('/images/signatures'); // path location
-                $image_parts = explode(";base64,", $img);
-                $image_type_aux = explode("image/", $image_parts[0]);
-                $image_type = $image_type_aux[1];
-                $image_base64 = base64_decode($image_parts[1]);
-                $uniqid = uniqid();
-                $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-                $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-                file_put_contents($file, $image_base64);
+                $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
                 $talkattandance['worker_signature'] = $imageName;
                 }
 
@@ -1408,15 +1358,8 @@ unlink($temp_file);
             $preMeetingAttandance['pre_meeting_id'] = $request->preMeetingId;
             if($request->signature){
                 $img = $request->signature;
-                $folderPath = public_path('/images/signatures'); // path location
-                $image_parts = explode(";base64,", $img);
-                $image_type_aux = explode("image/", $image_parts[0]);
-                $image_type = $image_type_aux[1];
-                $image_base64 = base64_decode($image_parts[1]);
-                $uniqid = uniqid();
-                $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-                $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-                file_put_contents($file, $image_base64);
+                $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
                 $preMeetingAttandance['signature'] = $imageName;
             }
             if($preMeetingAttandance->save()){
@@ -1470,15 +1413,8 @@ unlink($temp_file);
                 }                
                 if($request->signature){
                     $img = $request->signature;
-                    $folderPath = public_path('/images/signatures'); // path location
-                    $image_parts = explode(";base64,", $img);
-                    $image_type_aux = explode("image/", $image_parts[0]);
-                    $image_type = $image_type_aux[1];
-                    $image_base64 = base64_decode($image_parts[1]);
-                    $uniqid = uniqid();
-                    $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-                    $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-                    file_put_contents($file, $image_base64);
+                    $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
                     $inspectionRepresentative['signature'] = $imageName;
                 }
                 if($inspectionRepresentative->save()){
@@ -1625,15 +1561,8 @@ unlink($temp_file);
                 
                 if($request->supplier_signature){
                     $img = $request->supplier_signature;
-                    $folderPath = public_path('/images/signatures'); // path location
-                    $image_parts = explode(";base64,", $img);
-                    $image_type_aux = explode("image/", $image_parts[0]);
-                    $image_type = $image_type_aux[1];
-                    $image_base64 = base64_decode($image_parts[1]);
-                    $uniqid = uniqid();
-                    $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-                    $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-                    file_put_contents($file, $image_base64);
+                    $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
                     $supplierContractorEvalution['supplier_signature'] = $imageName;
                 }
                 
@@ -1650,9 +1579,10 @@ unlink($temp_file);
                     $files = $request->file('certified_quality_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/suppliercontractorevalution'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     // Save comma-separated file names to the database
                     $supplierContractorEvalution->certified_quality_doc = implode(',', $fileNames);
@@ -1661,71 +1591,71 @@ unlink($temp_file);
                  
                  if ($request->file('quality_assurance_doc')) {
                      $file = $request->file('quality_assurance_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->quality_assurance_doc = $filename;
                  }
                  
                  if ($request->file('verify_worker_competency_doc')) {
                      $file = $request->file('verify_worker_competency_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->verify_worker_competency_doc = $filename;
                  }
                  
                  if ($request->file('organisation_insurances_licences_qualifications_doc')) {
                      $file = $request->file('organisation_insurances_licences_qualifications_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->organisation_insurances_licences_qualifications_doc = $filename;
                  }
                  
                  if ($request->file('prosecuted_issue_doc')) {
                      $file = $request->file('prosecuted_issue_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->prosecuted_issue_doc = $filename;
                  }
                  
                  if ($request->file('under_investigation_environmental_laws_doc')) {
                      $file = $request->file('under_investigation_environmental_laws_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->under_investigation_environmental_laws_doc = $filename;
                  }
                  
                  if ($request->file('company_officers_criminal_offence_doc')) {
                      $file = $request->file('company_officers_criminal_offence_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->company_officers_criminal_offence_doc = $filename;
                  }
                  
                  if ($request->file('procedures_systems_doc')) {
                      $file = $request->file('procedures_systems_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->procedures_systems_doc = $filename;
                  }
                  
                  if ($request->file('staff_qualified_administering_first_aid_doc')) {
                      $file = $request->file('staff_qualified_administering_first_aid_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->staff_qualified_administering_first_aid_doc = $filename;
                  }
                  
                  if ($request->file('materials_return_credit_policy_doc')) {
                      $file = $request->file('materials_return_credit_policy_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->materials_return_credit_policy_doc = $filename;
                  }
                  
                  if ($request->file('trade_references_doc')) {
                      $file = $request->file('trade_references_doc');
-                     $filename = uniqid() . '_' . $file->getClientOriginalName();
-                     $file->move(public_path('/suppliercontractorevalution'), $filename);
+                     $stored = store_uploaded_file_safe($file, public_path('/suppliercontractorevalution'), '/suppliercontractorevalution', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                     $filename = $stored['name'] ?? '';
                      $supplierContractorEvalution->trade_references_doc = $filename;
                  }
 
@@ -1943,15 +1873,8 @@ unlink($temp_file);
 
                 if($request->supplier_signature){
                     $img = $request->supplier_signature;
-                    $folderPath = public_path('/images/signatures'); // path location
-                    $image_parts = explode(";base64,", $img);
-                    $image_type_aux = explode("image/", $image_parts[0]);
-                    $image_type = $image_type_aux[1];
-                    $image_base64 = base64_decode($image_parts[1]);
-                    $uniqid = uniqid();
-                    $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-                    $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-                    file_put_contents($file, $image_base64);
+                    $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
                     $supplierContractorEvalution['supplier_signature'] = $imageName;
                 }
                 
@@ -2133,15 +2056,8 @@ unlink($temp_file);
                 $contractorPreCheckList['manager_date'] = $request->manager_date;
                 if($request->manager_signature){
                     $img = $request->manager_signature;
-                    $folderPath = public_path('/images/signatures'); // path location
-                    $image_parts = explode(";base64,", $img);
-                    $image_type_aux = explode("image/", $image_parts[0]);
-                    $image_type = $image_type_aux[1];
-                    $image_base64 = base64_decode($image_parts[1]);
-                    $uniqid = uniqid();
-                    $file = $folderPath . '/' . $uniqid . '.' . $image_type;
-                    $imageName = '/public/images/signatures/'. $uniqid .'.'.$image_type;
-                    file_put_contents($file, $image_base64);
+                    $stored = store_base64_upload($img, public_path('/images/signatures'), '/public/images/signatures');
+            $imageName = $stored['public'] ?? '';
                     $contractorPreCheckList['manager_signature'] = $imageName;
                 }
                 
@@ -2151,9 +2067,10 @@ unlink($temp_file);
                     $files = $request->file('insurance_policy_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->insurance_policy_doc = implode(',', $fileNames);
                 }
@@ -2162,9 +2079,10 @@ unlink($temp_file);
                     $files = $request->file('compensation_policy_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->compensation_policy_doc = implode(',', $fileNames);
                 }
@@ -2173,9 +2091,10 @@ unlink($temp_file);
                     $files = $request->file('qualifications_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->qualifications_doc = implode(',', $fileNames);
                 }
@@ -2183,9 +2102,10 @@ unlink($temp_file);
                     $files = $request->file('risk_injury_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->risk_injury_doc = implode(',', $fileNames);
                 }
@@ -2193,9 +2113,10 @@ unlink($temp_file);
                     $files = $request->file('specific_emergency_plan_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->specific_emergency_plan_doc = implode(',', $fileNames);
                 }
@@ -2203,9 +2124,10 @@ unlink($temp_file);
                     $files = $request->file('records_plant_equipment_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->records_plant_equipment_doc = implode(',', $fileNames);
                 }
@@ -2213,9 +2135,10 @@ unlink($temp_file);
                     $files = $request->file('plant_brought_site_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->plant_brought_site_doc = implode(',', $fileNames);
                 }
@@ -2223,9 +2146,10 @@ unlink($temp_file);
                     $files = $request->file('exposure_standards_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->exposure_standards_doc = implode(',', $fileNames);
                 }
@@ -2233,9 +2157,10 @@ unlink($temp_file);
                     $files = $request->file('testing_records_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->testing_records_doc = implode(',', $fileNames);
                 }
@@ -2243,9 +2168,10 @@ unlink($temp_file);
                     $files = $request->file('training_competency_doc');
                     $fileNames = [];
                     foreach ($files as $file) {
-                        $filename = uniqid() . '_' . $file->getClientOriginalName();
-                        $file->move(public_path('/preStartChecklist'), $filename);
-                        $fileNames[] = $filename;
+                        $stored = store_uploaded_file_safe($file, public_path('/preStartChecklist'), '/preStartChecklist', ['jpg', 'jpeg', 'png', 'gif', 'webp', 'pdf']);
+                        if ($stored) {
+                            $fileNames[] = $stored['name'];
+                        }
                     }
                     $contractorPreCheckList->training_competency_doc = implode(',', $fileNames);
                 }

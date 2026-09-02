@@ -18,10 +18,10 @@
 <div class="row m-3">
    <form class="form-inline" method="GET">
    <div class="col-md-2">
-      <input type="date" class="form-control" name="from_date" id="from_date" autocomplete="off" value="<?php echo isset($_GET['from_date']) ? $_GET['from_date'] : ''; ?>" >
+      <input type="date" class="form-control" name="from_date" id="from_date" autocomplete="off" value="{{ request('from_date') }}" >
    </div>
    <div class="col-md-2">
-      <input type="date" class="form-control" name="to_date" id="to_date" autocomplete="off" value="<?php echo isset($_GET['to_date']) ? $_GET['to_date'] : ''; ?>">
+      <input type="date" class="form-control" name="to_date" id="to_date" autocomplete="off" value="{{ request('to_date') }}">
    </div>
    <div class="col-md-2">
       <button id="filters" class="btn btn-success filter topmra" style="margin-left: -11px;">Filter</button>

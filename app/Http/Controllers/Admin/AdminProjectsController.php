@@ -26,7 +26,11 @@ class AdminProjectsController extends Controller
 
     public function edit($id)
     {
-        $record = Projects::find($id);
+        $record = Projects::select('projects.*')
+            ->join('user_projects', 'projects.id', '=', 'user_projects.project_id')
+            ->where('user_projects.user_id', auth()->id())
+            ->where('projects.id', $id)
+            ->first();
 
         if(!$record){
             return redirect()->back()->with('danger', 'Something Worng');
@@ -48,7 +52,11 @@ class AdminProjectsController extends Controller
             ]
         );
 
-        $record = Projects::find($id);
+        $record = Projects::select('projects.*')
+            ->join('user_projects', 'projects.id', '=', 'user_projects.project_id')
+            ->where('user_projects.user_id', auth()->id())
+            ->where('projects.id', $id)
+            ->first();
 
         if (empty($record)) {
             return redirect()->back()->with('danger', 'Something Worng');
@@ -75,7 +83,14 @@ class AdminProjectsController extends Controller
     {
         $id = $request->id;
         $status = $request->status;
-        $page = Projects::find($id);
+        $page = Projects::select('projects.*')
+            ->join('user_projects', 'projects.id', '=', 'user_projects.project_id')
+            ->where('user_projects.user_id', auth()->id())
+            ->where('projects.id', $id)
+            ->first();
+        if (!$page) {
+            return response()->json(['code' => 404, 'error' => true, 'message' => 'Record not found']);
+        }
         $page->status = $status;
         $page->save();
 

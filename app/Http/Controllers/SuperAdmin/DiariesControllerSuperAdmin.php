@@ -82,29 +82,14 @@ class DiariesControllerSuperAdmin extends Controller
 
             $images = $request->file('images');
             if ($images) {
-               // $targetDirectory = '/images/diaryImage/'; // path location
-                $targetDirectory = public_path('/images/diaryImage/'); // path location
-                foreach($_FILES['images']['name'] as $key => $name){
-
-                    $uniqid = uniqid();
-                    $targetFile = $targetDirectory . $uniqid . basename($_FILES['images']['name'][$key]);
-
-                    $imageName = "/public/images/diaryImage/".$uniqid.basename($_FILES['images']['name'][$key]);
-
-                    // Check if the file is an actual image or a fake image
-                    if(getimagesize($_FILES['images']['tmp_name'][$key]) !== false){
-                        if(move_uploaded_file($_FILES['images']['tmp_name'][$key], $targetFile)){
-                            
-                            $diaryImageData = new DiaryImage();
-                            $diaryImageData['diary_id'] = $diaryData->id;
-                            $diaryImageData['images'] = $imageName;
-                            $diaryImageData->save();
-
-                        } else {
-                            echo "Sorry, there was an error uploading $name.<br>";
-                        }
-                    } else {
-                        echo "Invalid file: $name is not an image.<br>";
+                $targetDirectory = public_path('/images/diaryImage/');
+                foreach ((array) $images as $file) {
+                    $stored = store_uploaded_file_safe($file, $targetDirectory, '/public/images/diaryImage');
+                    if ($stored) {
+                        $diaryImageData = new DiaryImage();
+                        $diaryImageData['diary_id'] = $diaryData->id;
+                        $diaryImageData['images'] = $stored['public'];
+                        $diaryImageData->save();
                     }
                 }
             }
@@ -147,9 +132,6 @@ class DiariesControllerSuperAdmin extends Controller
      */
      
      public function update(Request $request,$id){
-         
-         print_r($request->all());
-         exit;
        
        $diaryRecord = Diary::where(['id' => $id])->first();
 
@@ -217,27 +199,14 @@ class DiariesControllerSuperAdmin extends Controller
 
             $images = $request->file('images');
             if ($images) {
-               // $targetDirectory = '/images/diaryImage/'; // path location
-                $targetDirectory = public_path('/images/diaryImage/'); // path location
-                foreach($_FILES['images']['name'] as $key => $name){
-
-                    $uniqid = uniqid();
-                    $targetFile = $targetDirectory . $uniqid . basename($_FILES['images']['name'][$key]);
-
-                    $imageName = "/public/images/diaryImage/".$uniqid.basename($_FILES['images']['name'][$key]);
-
-                    // Check if the file is an actual image or a fake image
-                    if(getimagesize($_FILES['images']['tmp_name'][$key]) !== false){
-                        if(move_uploaded_file($_FILES['images']['tmp_name'][$key], $targetFile)){
-                            $diaryImageData = new DiaryImage();
-                            $diaryImageData['diary_id'] = $diaryRecord->id;
-                            $diaryImageData['images'] = $imageName;
-                            $diaryImageData->save();
-                        } else {
-                            echo "Sorry, there was an error uploading $name.<br>";
-                        }
-                    } else {
-                        echo "Invalid file: $name is not an image.<br>";
+                $targetDirectory = public_path('/images/diaryImage/');
+                foreach ((array) $images as $file) {
+                    $stored = store_uploaded_file_safe($file, $targetDirectory, '/public/images/diaryImage');
+                    if ($stored) {
+                        $diaryImageData = new DiaryImage();
+                        $diaryImageData['diary_id'] = $diaryRecord->id;
+                        $diaryImageData['images'] = $stored['public'];
+                        $diaryImageData->save();
                     }
                 }
             }

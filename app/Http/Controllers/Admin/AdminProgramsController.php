@@ -54,6 +54,9 @@ class AdminProgramsController extends Controller
         if ($validate->fails()) {
             return back()->withErrors($validate->errors())->withInput();
         }
+        if (!admin_user_can_access_project($request->project)) {
+            return redirect()->back()->with('error', 'Something went wrong. Please Try Again.');
+        }
 
         $programRecord = Programs::where('project_id', $request->project)->whereDate('program_date', $request->program_date)->first();
         if ($programRecord) {
@@ -79,7 +82,7 @@ class AdminProgramsController extends Controller
 
     public function update(Request $request, $id) {
         $programRecord = Programs::where(['id' => $id])->first();
-        if (empty($programRecord)) {
+        if (empty($programRecord) || !admin_user_can_access_project($programRecord->project_id)) {
             return redirect()->back()->with('error', 'Something Worng');
         } else {
             $programRecord['note'] = $request->note;
@@ -136,6 +139,10 @@ class AdminProgramsController extends Controller
     {
         $programTask = ProgramTask::find($id);
         if (!$programTask) {
+            return response()->json(['message' => 'Record not found'], 404);
+        }
+        $program = Programs::find($programTask->program_id);
+        if (!$program || !admin_user_can_access_project($program->project_id)) {
             return response()->json(['message' => 'Record not found'], 404);
         }
         $programTask->delete();

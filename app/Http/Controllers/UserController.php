@@ -86,7 +86,7 @@ class UserController extends Controller
         $user = User::where('token', $token)->where('is_verified', 0)->first();
         if ($user) {
             $email = $user->email;
-            return view('auth.change-password', compact('email'));
+            return view('auth.change-password', compact('email', 'token'));
         }
         return redirect()->route('forgot-password')->with('failed', 'Password reset link is expired');
     }
@@ -130,12 +130,16 @@ class UserController extends Controller
      */
     public function updatePassword(Request $request) {
         $this->validate($request, [
-            'email' => 'required',
+            'email' => 'required|email',
+            'token' => 'required|string',
             'password' => 'required|min:6',
             'confirm_password' => 'required|same:password'
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)
+            ->where('token', $request->token)
+            ->where('is_verified', 0)
+            ->first();
         if ($user) {
             $user['is_verified'] = 0;
             $user['token'] = '';

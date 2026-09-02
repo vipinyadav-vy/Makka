@@ -42,6 +42,9 @@ class AdminDiariesController extends Controller
 
     public function store(Request $request)
     {
+        if (!admin_user_can_access_project($request->project_id)) {
+            return redirect()->back()->with('error', 'Something went wrong. Please Try Again.');
+        }
         $diaryData = new Diary();
         $diaryData['project_id'] = $request->project_id;
         $diaryData['program_id'] = $request->program_id;
@@ -70,28 +73,14 @@ class AdminDiariesController extends Controller
 
             $images = $request->file('images');
             if ($images) {
-                // $targetDirectory = '/images/diaryImage/'; // path location
-                $targetDirectory = public_path('/images/diaryImage/'); // path location
-                foreach ($_FILES['images']['name'] as $key => $name) {
-
-                    $uniqid = uniqid();
-                    $targetFile = $targetDirectory . $uniqid . basename($_FILES['images']['name'][$key]);
-
-                    $imageName = "/public/images/diaryImage/" . $uniqid . basename($_FILES['images']['name'][$key]);
-
-                    // Check if the file is an actual image or a fake image
-                    if (getimagesize($_FILES['images']['tmp_name'][$key]) !== false) {
-                        if (move_uploaded_file($_FILES['images']['tmp_name'][$key], $targetFile)) {
-
-                            $diaryImageData = new DiaryImage();
-                            $diaryImageData['diary_id'] = $diaryData->id;
-                            $diaryImageData['images'] = $imageName;
-                            $diaryImageData->save();
-                        } else {
-                            echo "Sorry, there was an error uploading $name.<br>";
-                        }
-                    } else {
-                        echo "Invalid file: $name is not an image.<br>";
+                $targetDirectory = public_path('/images/diaryImage/');
+                foreach ((array) $images as $file) {
+                    $stored = store_uploaded_file_safe($file, $targetDirectory, '/public/images/diaryImage');
+                    if ($stored) {
+                        $diaryImageData = new DiaryImage();
+                        $diaryImageData['diary_id'] = $diaryData->id;
+                        $diaryImageData['images'] = $stored['public'];
+                        $diaryImageData->save();
                     }
                 }
             }
@@ -105,7 +94,7 @@ class AdminDiariesController extends Controller
     {
         $diaryRecord = Diary::where(['id' => $id])->first();
 
-        if (empty($diaryRecord)) {
+        if (empty($diaryRecord) || !admin_user_can_access_project($diaryRecord->project_id)) {
             return redirect()->back()->with('error', 'Something Worng');
         } else {
 
@@ -153,27 +142,14 @@ class AdminDiariesController extends Controller
 
                 $images = $request->file('images');
                 if ($images) {
-                    // $targetDirectory = '/images/diaryImage/'; // path location
-                    $targetDirectory = public_path('/images/diaryImage/'); // path location
-                    foreach ($_FILES['images']['name'] as $key => $name) {
-
-                        $uniqid = uniqid();
-                        $targetFile = $targetDirectory . $uniqid . basename($_FILES['images']['name'][$key]);
-
-                        $imageName = "/public/images/diaryImage/" . $uniqid . basename($_FILES['images']['name'][$key]);
-
-                        // Check if the file is an actual image or a fake image
-                        if (getimagesize($_FILES['images']['tmp_name'][$key]) !== false) {
-                            if (move_uploaded_file($_FILES['images']['tmp_name'][$key], $targetFile)) {
-                                $diaryImageData = new DiaryImage();
-                                $diaryImageData['diary_id'] = $diaryRecord->id;
-                                $diaryImageData['images'] = $imageName;
-                                $diaryImageData->save();
-                            } else {
-                                echo "Sorry, there was an error uploading $name.<br>";
-                            }
-                        } else {
-                            echo "Invalid file: $name is not an image.<br>";
+                    $targetDirectory = public_path('/images/diaryImage/');
+                    foreach ((array) $images as $file) {
+                        $stored = store_uploaded_file_safe($file, $targetDirectory, '/public/images/diaryImage');
+                        if ($stored) {
+                            $diaryImageData = new DiaryImage();
+                            $diaryImageData['diary_id'] = $diaryRecord->id;
+                            $diaryImageData['images'] = $stored['public'];
+                            $diaryImageData->save();
                         }
                     }
                 }
@@ -190,6 +166,10 @@ class AdminDiariesController extends Controller
         if (!$diaryImg) {
             return response()->json(['message' => 'Resource not found'], 404);
         }
+        $diary = Diary::find($diaryImg->diary_id);
+        if (!$diary || !admin_user_can_access_project($diary->project_id)) {
+            return response()->json(['message' => 'Resource not found'], 404);
+        }
         $diaryImg->delete();
         return response()->json(['message' => 'Resource deleted'], 200);
     }
@@ -198,6 +178,10 @@ class AdminDiariesController extends Controller
     {
         $diaryEmploye = DiaryEmploye::find($id);
         if (!$diaryEmploye) {
+            return response()->json(['message' => 'Record not found'], 404);
+        }
+        $diary = Diary::find($diaryEmploye->diary_id);
+        if (!$diary || !admin_user_can_access_project($diary->project_id)) {
             return response()->json(['message' => 'Record not found'], 404);
         }
         $diaryEmploye->delete();
